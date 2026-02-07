@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Heresy Slider</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      background-color: #1a1a2e;
+    }
+
+    body {
+      min-height: 100vh;
+      background-color: #1a1a2e;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      color: #e8e4d9;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      max-width: 800px;
+      width: 100%;
+    }
+
+    h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 2rem;
+      text-align: center;
+      margin-bottom: 10px;
+      letter-spacing: 0.12em;
+      color: #d4af37;
+      text-shadow: 0 2px 10px rgba(212, 175, 55, 0.3);
+    }
+
+    .subtitle {
+      text-align: center;
+      font-style: italic;
+      font-size: 1.1rem;
+      color: #a0a0a0;
+      margin-bottom: 50px;
+    }
+
+    /* Slider section */
+    .slider-section {
+      margin-bottom: 40px;
+    }
+
+    .slider-container {
+      position: relative;
+      padding: 20px 0;
+    }
+
+    .slider-track {
+      position: relative;
+      height: 16px;
+      background: linear-gradient(90deg, 
+        #d4af37 0%, 
+        #c9a227 20%,
+        #cd853f 50%, 
+        #a0522d 75%,
+        #8b4513 100%
+      );
+      border-radius: 8px;
+      box-shadow: 
+        0 0 20px rgba(212, 175, 55, 0.4),
+        0 0 20px rgba(139, 69, 19, 0.4),
+        inset 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .slider-input {
+      position: absolute;
+      top: 20px;
+      left: 0;
+      width: 100%;
+      height: 16px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: transparent;
+      cursor: pointer;
+      z-index: 10;
+    }
+
+    .slider-input::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 36px;
+      height: 36px;
+      background: radial-gradient(circle at 30% 30%, #fff, #d4af37);
+      border-radius: 50%;
+      box-shadow: 
+        0 0 20px rgba(212, 175, 55, 0.8),
+        0 4px 10px rgba(0,0,0,0.4),
+        inset 0 -2px 5px rgba(0,0,0,0.2);
+      cursor: grab;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .slider-input::-webkit-slider-thumb:hover {
+      transform: scale(1.1);
+      box-shadow: 
+        0 0 30px rgba(212, 175, 55, 1),
+        0 4px 15px rgba(0,0,0,0.5),
+        inset 0 -2px 5px rgba(0,0,0,0.2);
+    }
+
+    .slider-input::-webkit-slider-thumb:active {
+      cursor: grabbing;
+      transform: scale(1.15);
+    }
+
+    .slider-input::-moz-range-thumb {
+      width: 36px;
+      height: 36px;
+      background: radial-gradient(circle at 30% 30%, #fff, #d4af37);
+      border-radius: 50%;
+      border: none;
+      box-shadow: 
+        0 0 20px rgba(212, 175, 55, 0.8),
+        0 4px 10px rgba(0,0,0,0.4);
+      cursor: grab;
+    }
+
+    .end-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 15px;
+    }
+
+    .end-label {
+      font-family: 'Cinzel', serif;
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .end-label.left { color: #d4af37; }
+    .end-label.right { color: #cd853f; }
+
+    /* Mobile responsiveness */
+    @media (max-width: 600px) {
+      body {
+        padding: 20px 15px;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      .subtitle {
+        font-size: 1rem;
+        margin-bottom: 30px;
+      }
+
+      .result-card {
+        padding: 20px;
+        height: auto;
+        min-height: 420px;
+        padding-bottom: 110px;
+      }
+
+      .result-name {
+        font-size: 1.4rem;
+        margin-bottom: 8px;
+      }
+
+      .result-comedy,
+      .result-tagline {
+        font-size: 1rem;
+        margin-bottom: 10px;
+      }
+
+      .result-description {
+        font-size: 0.85rem;
+        line-height: 1.5;
+        margin-bottom: 20px;
+      }
+
+      .error-meter {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        right: 20px;
+      }
+
+      .slider-input::-webkit-slider-thumb {
+        width: 30px;
+        height: 30px;
+      }
+
+      .slider-input::-moz-range-thumb {
+        width: 30px;
+        height: 30px;
+      }
+
+      .end-labels {
+        margin-top: 10px;
+      }
+
+      .end-label {
+        font-size: 0.75rem;
+      }
+
+      .instructions {
+        font-size: 0.8rem;
+      }
+    }
+
+    /* Result display */
+    .result-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 30px;
+      text-align: center;
+      transition: border-color 0.4s ease, background 0.4s ease, box-shadow 0.4s ease;
+      height: 340px;
+      position: relative;
+    }
+
+    .result-card.orthodox {
+      border-color: rgba(212, 175, 55, 0.5);
+      background: rgba(212, 175, 55, 0.08);
+      box-shadow: 0 0 40px rgba(212, 175, 55, 0.15);
+    }
+
+    .result-card.heresy {
+      border-color: rgba(220, 80, 80, 0.4);
+      background: rgba(220, 80, 80, 0.05);
+    }
+
+    .result-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: 10px;
+      transition: color 0.4s ease;
+    }
+
+    .result-label.orthodox { color: #7cb87c; }
+    .result-label.heresy { color: #dc6b6b; }
+
+    .result-name {
+      font-family: 'Cinzel', serif;
+      font-size: 1.8rem;
+      margin-bottom: 5px;
+      transition: color 0.4s ease;
+    }
+
+    .result-comedy {
+      font-size: 1.1rem;
+      color: #e8c547;
+      margin-bottom: 6px;
+      font-style: italic;
+      min-height: 1.5rem;
+    }
+
+    .result-tagline {
+      font-size: 1.1rem;
+      color: #e8c547;
+      margin-bottom: 6px;
+      font-style: italic;
+      min-height: 1.5rem;
+    }
+
+    .result-description {
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: #c8c8c8;
+      margin-bottom: 15px;
+    }
+
+    .result-condemned {
+      font-size: 0.9rem;
+      color: #888;
+      font-style: italic;
+    }
+
+    .result-condemned strong {
+      color: #aaa;
+    }
+
+    /* Error meter */
+    .error-meter {
+      position: absolute;
+      bottom: 30px;
+      left: 30px;
+      right: 30px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .error-meter-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #707070;
+      margin-bottom: 8px;
+    }
+
+    .error-meter-bar {
+      height: 8px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .error-meter-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #7cb87c, #d4af37, #dc6b6b);
+      border-radius: 4px;
+      transition: width 0.4s ease;
+    }
+
+    .error-meter-text {
+      margin-top: 8px;
+      font-size: 0.95rem;
+      color: #c0c0c0;
+      font-style: italic;
+    }
+
+    /* Instructions */
+    .instructions {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 0.9rem;
+      color: #606060;
+    }
+
+    .instructions span {
+      display: inline-block;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>The Heresy Slider</h1>
+    <p class="subtitle">Orthodox or Not?</p>
+
+    <div class="slider-section">
+      <div class="slider-container">
+        <div class="slider-track"></div>
+        <input type="range" class="slider-input" id="heresySlider" min="0" max="100" value="0">
+      </div>
+
+      <div class="end-labels">
+        <span class="end-label left">✦ Orthodox</span>
+        <span class="end-label right">Heterodox ✦</span>
+      </div>
+    </div>
+
+    <div class="result-card" id="resultCard">
+      <h2 class="result-name" id="resultName">Chalcedonian Crusader</h2>
+      <p class="result-comedy" id="resultComedy"></p>
+      <p class="result-tagline" id="resultTagline">Union without confusion.</p>
+      <p class="result-description" id="resultDescription">
+        The Council of Chalcedon (451 AD) declared that Christ is one person with two complete natures—divine and human—united "without confusion, without change, without division, without separation." This is the balanced center that holds both truths in tension.
+      </p>
+      
+      <div class="error-meter">
+        <div class="error-meter-label">Distance from Orthodoxy</div>
+        <div class="error-meter-bar">
+          <div class="error-meter-fill" id="errorFill" style="width: 0%;"></div>
+        </div>
+        <p class="error-meter-text" id="errorText">Holy See approved</p>
+      </div>
+    </div>
+
+    <p class="instructions"><span></span></p>
+  </div>
+
+  <script>
+    const positions = [
+      {
+        name: "Chalcedonian Crusader",
+        comedy: '',
+        tagline: 'Union without confusion.',
+        description: "The Council of Chalcedon declared that Christ is one person with two complete natures, divine and human, united \"without confusion, without change, without division, without separation.\" This balanced center neither diminishes Christ's divinity nor his humanity.",
+        condemned: "",
+        range: [0, 9],
+        isOrthodox: true
+      },
+      {
+        name: "Donatism",
+        comedy: 'If the priest has sinned, the grace is thinned.',
+        tagline: '',
+        description: "Named for its leader, the theologian Donatus the Great, Donatism included a group of extremist sects, mostly in North Africa, that emphasized asceticism. They valued martyrdom, found lapses of faith inexcusable, and believed that the sacraments required a pure priest to be effective.",
+        condemned: "Condemned at the Council of Arles (314 AD) and opposed by Augustine",
+        range: [10, 18],
+        isOrthodox: false
+      },
+      {
+        name: "Pelagianism",
+        comedy: 'Grace optional.',
+        tagline: '',
+        description: "Associated with the British lay-theologian Pelagius, this heresy denied original sin and the distinction between law and gospel. Pelagius taught that man is created good with free will, and sin is transmitted by example rather than inheritance. People could be saved by their own righteous choices and habits without necessarily requiring divine grace.",
+        condemned: "Condemned at the Council of Carthage (418 AD) and the Council of Ephesus (431 AD)",
+        range: [19, 27],
+        isOrthodox: false
+      },
+      {
+        name: "Apollinarianism",
+        comedy: 'A real no-brainer.',
+        tagline: '',
+        description: "Named for Apollinaris of Laodicea, this heresy says that Jesus Christ was not a real man, but not totally divine either. Apollinarians suggested that he had a human body and a human soul, but his mind was taken over by the eternal Logos.",
+        condemned: "Condemned at the Council of Constantinople (381 AD)",
+        range: [28, 36],
+        isOrthodox: false
+      },
+      {
+        name: "Nestorianism",
+        comedy: 'Two natures? Why not two persons!',
+        tagline: '',
+        description: "Supposedly, Nestorius, Patriarch of Constantinople, believed that Jesus Christ had two natures, man and God, which remained separate throughout his period on earth. This is not really what Nestorius said, but the name stuck.",
+        condemned: "Condemned at the Council of Ephesus (431 AD)",
+        range: [37, 45],
+        isOrthodox: false
+      },
+      {
+        name: "Monophysitism",
+        comedy: 'One nature to rule them all.',
+        tagline: '',
+        description: "Monophysite comes from the Greek words for \"one body.\" This heresy says that Jesus Christ was a joining of the eternal Logos with the human person Jesus, which occurred at incarnation. He therefore is two separate natures joined in one body.",
+        condemned: "Condemned at the Council of Chalcedon (451 AD)",
+        range: [46, 54],
+        isOrthodox: false
+      },
+      {
+        name: "Sabellianism",
+        comedy: 'Three for one special!',
+        tagline: '',
+        description: "Sabellianism is named for its founder Sabellius, who taught in Rome in the early 3rd century. It is sometimes referred to as modalistic monarchianism. The Father, Son, and Holy Ghost are three modes, roles, or faces of a single person, God. This implies that Jesus Christ was purely divine, without humanness, and therefore could not truly have suffered or died.",
+        condemned: "Condemned by Pope Callixtus I (c. 220 AD) and subsequent councils",
+        range: [55, 63],
+        isOrthodox: false
+      },
+      {
+        name: "Arianism",
+        comedy: 'One Lord, hold the homoousios.',
+        tagline: '',
+        description: "Arianism is named after Arius, a priest in Alexandria. Jesus Christ was thought of as a created being, the first and greatest of God's creations, but not coeternal or of the same substance as the Father.",
+        condemned: "Condemned at the Council of Nicaea (325 AD)",
+        range: [64, 72],
+        isOrthodox: false
+      },
+      {
+        name: "Docetism",
+        comedy: 'It\'s just a flesh wound.',
+        tagline: '',
+        description: "The name comes from the Greek word dokesis, meaning \"to seem.\" Along the same lines as Sabellianism, Docetism says that Christ was not a real human being and did not have a real human body. He only seemed to be human to us. Christ only, no Jesus.",
+        condemned: "Opposed by Ignatius of Antioch (c. 110 AD); implicitly rejected at Nicaea (325) and Chalcedon (451)",
+        range: [73, 81],
+        isOrthodox: false
+      },
+      {
+        name: "Marcionism",
+        comedy: 'Torah? I hardly know her.',
+        tagline: '',
+        description: "Marcion of Sinope taught that the wrathful God of the Hebrew Scriptures was a different, inferior deity from the loving Father revealed by Jesus. He rejected the entire Old Testament and edited the New Testament down to Luke and ten Pauline epistles. His radical canon helped prompt the Church to define its own.",
+        condemned: "Excommunicated c. 144 AD; refuted by Tertullian and others",
+        range: [82, 90],
+        isOrthodox: false
+      },
+      {
+        name: "Manichaeism",
+        comedy: 'Matter maligned, Incarnation declined.',
+        tagline: '',
+        description: "Founded by Mani in 3rd-century Persia, Manichaeism taught that the universe is a battleground between co-eternal principles of Light and Darkness. All matter is evil, trapping particles of light. Jesus was a purely spiritual being who came to awaken souls to their true nature.",
+        condemned: "Condemned by multiple Roman emperors and church councils; opposed extensively by Augustine",
+        range: [91, 95],
+        isOrthodox: false
+      },
+      {
+        name: "Gnosticism",
+        comedy: 'Secret knowledge sold separately.',
+        tagline: '',
+        description: "Gnosticism posited a radical dualism between spirit and matter. The material world was created by a flawed or malevolent lesser deity, not the true God. Salvation comes through secret knowledge that liberates the divine spark trapped in human flesh. Christ was a spiritual emissary who couldn't truly take on evil matter.",
+        condemned: "Opposed by Irenaeus, Tertullian, and other early Fathers (2nd–3rd centuries)",
+        range: [96, 100],
+        isOrthodox: false
+      }
+    ];
+
+    const slider = document.getElementById('heresySlider');
+    const resultCard = document.getElementById('resultCard');
+    const resultLabel = document.getElementById('resultLabel');
+    const resultName = document.getElementById('resultName');
+    const resultComedy = document.getElementById('resultComedy');
+    const resultTagline = document.getElementById('resultTagline');
+    const resultDescription = document.getElementById('resultDescription');
+    const resultCondemned = document.getElementById('resultCondemned');
+    const errorFill = document.getElementById('errorFill');
+    const errorText = document.getElementById('errorText');
+
+    function getPosition(value) {
+      for (const pos of positions) {
+        if (value >= pos.range[0] && value <= pos.range[1]) {
+          return pos;
+        }
+      }
+      return positions.find(p => p.isOrthodox); // Default to orthodoxy
+    }
+
+    function getErrorDistance(value) {
+      // Orthodox is at 0-9, so distance increases as value increases
+      if (value <= 9) return 0;
+      return Math.min((value - 9) * 1.1, 100); // Scale to percentage
+    }
+
+    function getErrorMessage(distance) {
+      if (distance === 0) return "Holy See approved";
+      if (distance < 40) return "On Tertullian's sh*t list";
+      if (distance < 70) return "Excommunicatio";
+      return "Heretic!";
+    }
+
+    function updateDisplay() {
+      const value = parseInt(slider.value);
+      const position = getPosition(value);
+      const errorDistance = getErrorDistance(value);
+
+      // Update card styling based on distance from orthodoxy
+      const distancePercent = errorDistance / 100;
+      
+      // Interpolate from green (orthodox) to red (heterodox)
+      // Green: rgb(124, 184, 124), Red: rgb(180, 60, 60)
+      const r = Math.round(124 + (56 * distancePercent));
+      const g = Math.round(184 - (124 * distancePercent));
+      const b = Math.round(124 - (64 * distancePercent));
+      
+      resultCard.style.borderColor = `rgba(${r}, ${g}, ${b}, 0.5)`;
+      resultCard.style.background = `rgba(${r}, ${g}, ${b}, 0.08)`;
+      resultCard.style.boxShadow = `0 0 40px rgba(${r}, ${g}, ${b}, 0.15)`;
+
+      // Update content
+      resultName.textContent = position.name;
+      resultName.style.color = position.isOrthodox ? '#ffffff' : '#e8e4d9';
+      
+      if (position.comedy) {
+        resultComedy.textContent = position.comedy;
+        resultComedy.style.display = 'block';
+      } else {
+        resultComedy.style.display = 'none';
+      }
+      
+      if (position.tagline) {
+        resultTagline.textContent = position.tagline;
+        resultTagline.style.display = 'block';
+      } else {
+        resultTagline.style.display = 'none';
+      }
+      resultDescription.textContent = position.description;
+      
+      // Update error meter
+      errorFill.style.width = errorDistance + '%';
+      errorText.textContent = getErrorMessage(errorDistance);
+    }
+
+    slider.addEventListener('input', updateDisplay);
+    
+    // Initialize
+    updateDisplay();
+  </script>
+</body>
+</html>
